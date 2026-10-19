@@ -1,0 +1,46 @@
+name: 'Python Build, Scan, and Release'
+description: 'Scans dependencies, bundles a project, creates a release, and sends a webhook.'
+
+inputs:
+  # ... (same inputs as before: python-version, blacklist, etc.) ...
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: 'pip'
+
+    - name: Scan dependencies against blacklist
+      uses: ./blacklist-scanner
+      with:
+        requirements-file: 'requirements.txt'
+
+    - name: Install dependencies and build
+      shell: bash
+      run: |
+        pip install -r requirements.txt
+
+    - name: Bundle into .zip and .tar.gz
+      shell: bash
+      run: |
+        mkdir -p dist
+        zip -r dist/project-bundle.zip src/ requirements.txt main.py
+        tar -czvf dist/project-bundle.tar.gz src/ requirements.txt main.py
+
+    - name: Create GitHub Release and Upload Assets
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ inputs.tag-name }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+
+    - name: Send HTTP Notification
+      uses: ./webhook-notifier
+      with:
+        webhook-url: ${{ inputs.webhook-url }}
+        webhook-secret: ${{ inputs.webhook-secret }}
+        repository: ${{ github.repository }}
+        version: ${{ inputs.tag-name }}
