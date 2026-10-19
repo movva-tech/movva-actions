@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build, release, and notify
-        uses: movva-tech/movva-actions@main
+        uses: movva-tech/movva-actions@release-3
         with:
           python-version: '3.12'
           tag-name: ${{ github.ref_name }}
