@@ -1,0 +1,25 @@
+name: Release Python project
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Build, release, and notify
+        uses: movva-tech/movva-actions@main
+        with:
+          python-version: '3.12'
+          tag-name: ${{ github.ref_name }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          webhook-secret: ${{ secrets.RELEASE_WEBHOOK_SECRET }}

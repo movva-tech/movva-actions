@@ -2,7 +2,19 @@ name: 'Python Build, Scan, and Release'
 description: 'Scans dependencies, bundles a project, creates a release, and sends a webhook.'
 
 inputs:
-  # ... (same inputs as before: python-version, blacklist, etc.) ...
+  python-version:
+    description: 'Python version used to install dependencies and build the project.'
+    required: false
+    default: '3.12'
+  tag-name:
+    description: 'Git tag to create or use for the GitHub Release.'
+    required: true
+  github-token:
+    description: 'Token with permission to create the GitHub Release.'
+    required: true
+  webhook-secret:
+    description: 'Bearer token used to authorize the webhook request.'
+    required: true
 
 runs:
   using: "composite"
@@ -40,7 +52,6 @@ runs:
     - name: Send HTTP Notification
       uses: ./webhook-notifier
       with:
-        webhook-url: ${{ inputs.webhook-url }}
         webhook-secret: ${{ inputs.webhook-secret }}
         repository: ${{ github.repository }}
         version: ${{ inputs.tag-name }}

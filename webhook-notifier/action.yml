@@ -2,9 +2,6 @@ name: 'Go Webhook Notifier'
 description: 'Sends a release notification payload to a remote server.'
 
 inputs:
-  webhook-url:
-    description: 'Endpoint to send the notification'
-    required: true
   webhook-secret:
     description: 'Bearer token for authorization'
     required: true
@@ -27,7 +24,6 @@ runs:
     - name: Run Webhook Notifier
       shell: bash
       env:
-        WEBHOOK_URL: ${{ inputs.webhook-url }}
         WEBHOOK_SECRET: ${{ inputs.webhook-secret }}
         REPOSITORY: ${{ inputs.repository }}
         VERSION: ${{ inputs.version }}

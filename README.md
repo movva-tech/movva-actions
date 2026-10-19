@@ -23,6 +23,8 @@ The root action (`action.yml`) performs these steps:
 
 It expects a conventional Python project layout containing `requirements.txt`, `main.py`, and a `src/` directory.
 
+See the complete [release workflow example](example/release-example.yml).
+
 ### Intended workflow usage
 
 Replace `OWNER/REPOSITORY@VERSION` with the repository and immutable version you publish.
@@ -48,7 +50,6 @@ jobs:
           python-version: '3.12'
           tag-name: ${{ github.ref_name }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          webhook-url: ${{ secrets.RELEASE_WEBHOOK_URL }}
           webhook-secret: ${{ secrets.RELEASE_WEBHOOK_SECRET }}
 ```
 
@@ -74,7 +75,6 @@ The action installs Go 1.22 and exposes the selected path to the scanner as `INP
 
 | Input | Required | Description |
 | --- | --- | --- |
-| `webhook-url` | Yes | Destination endpoint for the release notification. |
 | `webhook-secret` | Yes | Bearer token used to authorize the request. Store it in GitHub Secrets. |
 | `repository` | Yes | Repository name included in the notification. |
 | `version` | Yes | Release version or tag included in the notification. |
@@ -82,7 +82,6 @@ The action installs Go 1.22 and exposes the selected path to the scanner as `INP
 ```yaml
 - uses: OWNER/REPOSITORY/webhook-notifier@VERSION
   with:
-    webhook-url: ${{ secrets.RELEASE_WEBHOOK_URL }}
     webhook-secret: ${{ secrets.RELEASE_WEBHOOK_SECRET }}
     repository: ${{ github.repository }}
     version: ${{ github.ref_name }}
@@ -93,8 +92,8 @@ The action installs Go 1.22 and exposes the selected path to the scanner as `INP
 - Run the release action on a Linux runner with `zip` and `tar` available (for example, `ubuntu-latest`).
 - Grant `contents: write` when the action creates a release with `GITHUB_TOKEN`.
 - Pin third-party actions and this action to a trusted tag or commit SHA in production.
-- Keep webhook URLs and secrets in GitHub Secrets; do not commit them to workflows.
+- Keep webhook secrets in GitHub Secrets; do not commit them to workflows.
 
 ## Current implementation status
 
-This repository is an initial scaffold. The root action references `python-version`, `tag-name`, `github-token`, `webhook-url`, and `webhook-secret`, but does not currently declare them in its `inputs` block. Additionally, the Go entry points are placeholders, so the scanner does not yet enforce a blacklist and the notifier does not yet send an HTTP request. The release configuration creates a release tag but does not currently attach the generated archives as release assets. Complete those implementations before relying on these actions in a production release process.
+This repository is an initial scaffold. The Go entry points are placeholders, so the scanner does not yet enforce a blacklist and the notifier does not yet send an HTTP request. The release configuration creates a release tag but does not currently attach the generated archives as release assets. Complete those implementations before relying on these actions in a production release process.
