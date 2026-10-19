@@ -1,0 +1,34 @@
+name: 'Go Webhook Notifier'
+description: 'Sends a release notification payload to a remote server.'
+
+inputs:
+  webhook-url:
+    description: 'Endpoint to send the notification'
+    required: true
+  webhook-secret:
+    description: 'Bearer token for authorization'
+    required: true
+  repository:
+    description: 'Name of the repository'
+    required: true
+  version:
+    description: 'Release version tag'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+        cache: true 
+
+    - name: Run Webhook Notifier
+      shell: bash
+      env:
+        WEBHOOK_URL: ${{ inputs.webhook-url }}
+        WEBHOOK_SECRET: ${{ inputs.webhook-secret }}
+        REPOSITORY: ${{ inputs.repository }}
+        VERSION: ${{ inputs.version }}
+      run: go run ${{ github.action_path }}/webhook-notifier/main.go

@@ -1,0 +1,23 @@
+name: 'Go Dependency Blacklist Scanner'
+description: 'Scans a Python requirements file for blacklisted packages.'
+
+inputs:
+  requirements-file:
+    description: 'Path to the requirements file'
+    required: false
+    default: 'requirements.txt'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+        cache: true
+
+    - name: Run Scanner
+      shell: bash
+      env:
+        INPUT_REQUIREMENTS_FILE: ${{ inputs.requirements-file }}
+      run: go run ${{ github.action_path }}/blacklist-scanner/main.go
